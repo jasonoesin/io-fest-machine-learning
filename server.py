@@ -2,10 +2,13 @@ import sys
 
 import cv2
 from flask import *
+from flask_cors import CORS
 
 from model import Model
 
 app = Flask(__name__)
+CORS(app)
+
 cv2.ocl.setUseOpenCL(False)
 
 # Create a new Machine Learning Model
