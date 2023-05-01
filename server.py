@@ -2,12 +2,12 @@ import sys
 
 import cv2
 from flask import *
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 from model import Model
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
 cv2.ocl.setUseOpenCL(False)
 
@@ -17,6 +17,7 @@ model = Model()
 
 # Routes
 @app.route('/predict', methods=['POST'])
+@cross_origin()
 def predict():
     data = request.get_json()
     high_bp = float(data['high_bp'])
@@ -57,6 +58,11 @@ def predict():
     'status' : "success",
     'result' : result.tolist()
     })
+
+@app.after_request
+def add_header(response):
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    return response
 
 if __name__=='__main__':
     app.run(debug=True,use_reloader=False, port=8000)
